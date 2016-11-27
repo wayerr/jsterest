@@ -17,9 +17,12 @@ package wayerr.jsterest.nashorn;
 
 import java.io.FileReader;
 import java.nio.file.Path;
+import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.SimpleBindings;
 import jdk.nashorn.api.scripting.JSObject;
+import jdk.nashorn.api.scripting.NashornScriptEngine;
 import wayerr.jsterest.Test;
 
 /**
@@ -28,21 +31,30 @@ import wayerr.jsterest.Test;
  */
 public class NashornTestFactory {
 
-    private final ScriptEngine engine;
+    private final NashornScriptEngine engine;
 
-    public NashornTestFactory() {
+    public NashornTestFactory() throws Exception {
         ScriptEngineManager sem = new ScriptEngineManager();
-        this.engine = sem.getEngineByName("js");
+        this.engine = (NashornScriptEngine) sem.getEngineByName("js");
+        DefaultBindings.init(this.engine);
     }
 
     public Test create(Path path) throws Exception {
         JSObject test;
+        final String pathString = path.toAbsolutePath().toString();
+        CompiledScript script;
         try (FileReader fr = new FileReader(path.toFile())) {
-            test = (JSObject)engine.eval(fr);
+            script = engine.compile(fr);
         }
-        if(!test.isFunction()) {
-            throw new IllegalArgumentException("Test '" + path + "' must be a function.");
-        }
-        return new TestOnNashorn(path, test);
+        return new TestOnNashorn(path, (tc) -> {
+            //below is importatnt because allow us to debug js files in Java Ide
+            final SimpleBindings local = new SimpleBindings();
+            local.put(ScriptEngine.FILENAME, pathString);
+            JSObject res = (JSObject) script.eval(local);
+            if(res == null || !res.isFunction()) {
+                throw new IllegalArgumentException("Test script '" + pathString + "' must return function.");
+            }
+            res.call(null, tc);
+        });
     }
 }

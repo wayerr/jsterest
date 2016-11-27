@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package wayerr.jsterest.http;
+package wayerr.jsterest.nashorn;
+
+import wayerr.jsterest.TestContext;
 
 /**
- *
- * @author wayerr
  */
-public class Http {
-
+public interface Invocation {
+    void invoke(TestContext tc) throws Exception;
 }

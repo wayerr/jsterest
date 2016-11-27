@@ -16,7 +16,7 @@
 package wayerr.jsterest.nashorn;
 
 import java.nio.file.Path;
-import jdk.nashorn.api.scripting.JSObject;
+
 import wayerr.jsterest.Test;
 import wayerr.jsterest.TestContext;
 
@@ -28,9 +28,9 @@ class TestOnNashorn implements Test {
 
     private final Path path;
     private final String name;
-    private final JSObject test;
+    private final Invocation test;
 
-    TestOnNashorn(Path path, JSObject test) {
+    TestOnNashorn(Path path, Invocation test) {
         this.path = path;
         final String fn = path.getFileName().toString();
         this.name = fn.substring(0, fn.lastIndexOf('.'));
@@ -39,7 +39,7 @@ class TestOnNashorn implements Test {
     
     @Override
     public void run(TestContext tc) throws Exception {
-        test.call(null, tc);
+        test.invoke(tc);
     }
 
     @Override
