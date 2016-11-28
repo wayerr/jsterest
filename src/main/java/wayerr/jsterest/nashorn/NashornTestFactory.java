@@ -17,7 +17,9 @@ package wayerr.jsterest.nashorn;
 
 import java.io.FileReader;
 import java.nio.file.Path;
+import javax.script.Bindings;
 import javax.script.CompiledScript;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
@@ -44,17 +46,17 @@ public class NashornTestFactory {
         final String pathString = path.toAbsolutePath().toString();
         CompiledScript script;
         try (FileReader fr = new FileReader(path.toFile())) {
+            final Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+            bindings.put(ScriptEngine.FILENAME, pathString);
             script = engine.compile(fr);
+            bindings.remove(ScriptEngine.FILENAME);
         }
         return new TestOnNashorn(path, (tc) -> {
-            //below is importatnt because allow us to debug js files in Java Ide
-            final SimpleBindings local = new SimpleBindings();
-            local.put(ScriptEngine.FILENAME, pathString);
-            JSObject res = (JSObject) script.eval(local);
+            JSObject res = (JSObject) script.eval(new SimpleBindings(tc.getAttributes()));
             if(res == null || !res.isFunction()) {
                 throw new IllegalArgumentException("Test script '" + pathString + "' must return function.");
             }
-            res.call(null, tc);
+            res.call(null);
         });
     }
 }

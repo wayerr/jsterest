@@ -1,4 +1,4 @@
-function test(ctx) {
+function test() {
     var request = {
         headers: {
             //'X-Auth-Token': "ctx.token"
