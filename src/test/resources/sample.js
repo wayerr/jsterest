@@ -1,6 +1,7 @@
 var api = include("app_api");
 function test() {
-   api.host = "http://localhost:8761";
+   api.host = "http://localhost:18080";
    var token = api.login("admin", "password");
-   console.debug(api.nodes(token));
+   console.debug("token:", token);
+   //console.debug(api.nodes(token));
 }

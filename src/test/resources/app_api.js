@@ -2,7 +2,7 @@ function () {
     var api = {};
     api.login = function(name, password) {
          var request = {
-            url: api.host + "/ui/token/login",
+            url: api.host + "/api/login",
             data: { username:name, password:password }
         };
         var resp = http.execute(request);
