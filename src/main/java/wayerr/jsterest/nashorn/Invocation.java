@@ -20,5 +20,5 @@ import wayerr.jsterest.TestContext;
 /**
  */
 public interface Invocation {
-    void invoke(TestContext tc) throws Exception;
+    Object invoke(TestContext tc) throws Exception;
 }

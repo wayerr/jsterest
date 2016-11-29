@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 wayerr <radiofun@ya.ru>.
+ * Copyright 2016 wayerr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,8 @@
 package wayerr.jsterest;
 
 /**
- *
- * @author wayerr
  */
-public interface Test {
-
-    /**
-     * Execute test on specified context.
-     * @param tc
-     * @throws Exception
-     */
-    public Object run(TestContext tc) throws Exception;
-
-    /**
-     * Name of test.
-     * @return 
-     */
-    public String getName();
+public interface SafeCloseable extends AutoCloseable {
+    @Override
+    void close();
 }

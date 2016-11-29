@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author wayerr
  */
 public final class TestContext {
+    private static final ThreadLocal<TestContext> TL = new ThreadLocal<>();
     private final ConcurrentMap<String, Object> attrs = new ConcurrentHashMap<>();
     
     /**
@@ -36,5 +37,27 @@ public final class TestContext {
     @Override
     public String toString() {
         return "TestContext{" + "attributes=" + attrs + '}';
+    }
+
+    /**
+     * Place this into thread local for {@link #getCurrent()}
+     * @return handler to remove it from thread local
+     */
+    public SafeCloseable open() {
+        TestContext old = TL.get();
+        TL.set(this);
+        return () -> {
+            TestContext curr = TL.get();
+            if(curr != this) {
+                throw new IllegalStateException("Current context is not identity with 'this'.");
+            }
+            TL.remove();
+            TL.set(old);
+        };
+    }
+
+
+    public static TestContext getCurrent() {
+        return TL.get();
     }
 }

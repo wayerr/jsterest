@@ -1,15 +1,6 @@
+var api = include("app_api");
 function test() {
-    var request = {
-        headers: {
-            //'X-Auth-Token': "ctx.token"
-            'Content-Type': 'application/json'
-        },
-        url:"http://localhost:8761/ui/token/login",
-        data:{
-            username:"admin",
-            password:"password"
-        }
-    };
-    var resp = http.execute(request);
-    console.debug("resp: ", resp.data.key);
+   api.host = "http://localhost:8761";
+   var token = api.login("admin", "password");
+   console.debug(api.nodes(token));
 }

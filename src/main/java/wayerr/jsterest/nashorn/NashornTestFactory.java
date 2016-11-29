@@ -25,7 +25,9 @@ import javax.script.ScriptEngineManager;
 import javax.script.SimpleBindings;
 import jdk.nashorn.api.scripting.JSObject;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
+import wayerr.jsterest.SafeCloseable;
 import wayerr.jsterest.Test;
+import wayerr.jsterest.TestsRegistry;
 
 /**
  *
@@ -35,10 +37,10 @@ public class NashornTestFactory {
 
     private final NashornScriptEngine engine;
 
-    public NashornTestFactory() throws Exception {
+    public NashornTestFactory(TestsRegistry testsRegistry) throws Exception {
         ScriptEngineManager sem = new ScriptEngineManager();
         this.engine = (NashornScriptEngine) sem.getEngineByName("js");
-        DefaultBindings.init(this.engine);
+        DefaultBindings.init(this.engine, testsRegistry);
     }
 
     public Test create(Path path) throws Exception {
@@ -52,11 +54,13 @@ public class NashornTestFactory {
             bindings.remove(ScriptEngine.FILENAME);
         }
         return new TestOnNashorn(path, (tc) -> {
-            JSObject res = (JSObject) script.eval(new SimpleBindings(tc.getAttributes()));
-            if(res == null || !res.isFunction()) {
-                throw new IllegalArgumentException("Test script '" + pathString + "' must return function.");
+            try(SafeCloseable in = tc.open()) {
+                JSObject res = (JSObject) script.eval(new SimpleBindings(tc.getAttributes()));
+                if(res == null || !res.isFunction()) {
+                    throw new IllegalArgumentException("Test script '" + pathString + "' must return function.");
+                }
+                return res.call(null);
             }
-            res.call(null);
         });
     }
 }

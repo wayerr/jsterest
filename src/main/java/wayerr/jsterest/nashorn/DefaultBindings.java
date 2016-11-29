@@ -15,6 +15,8 @@
  */
 package wayerr.jsterest.nashorn;
 
+import wayerr.jsterest.TestsRegistry;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -33,17 +35,25 @@ import javax.script.ScriptEngine;
  * @author wayerr
  */
 class DefaultBindings {
-    static void init(ScriptEngine se) throws Exception {
+    static void init(ScriptEngine se, TestsRegistry testsRegistry) throws Exception {
         Bindings target = se.getBindings(ScriptContext.GLOBAL_SCOPE);
         target.put("console", new Console());
         target.put("io", new IO());
-        final URL url = DefaultBindings.class.getResource("./http.js");
+        load(se, "./http.js");
+        Loader loader = new Loader(testsRegistry, se);
+        target.put("include", loader);
+    }
+
+    private static void load(ScriptEngine se, String resource) throws Exception {
+        Bindings engineScope = se.getBindings(ScriptContext.ENGINE_SCOPE);
+        Bindings globalScope = se.getBindings(ScriptContext.GLOBAL_SCOPE);
+        URL url = DefaultBindings.class.getResource(resource);
         try(InputStream is = url.openStream()) {
-            final Bindings engineScope = se.getBindings(ScriptContext.ENGINE_SCOPE);
             engineScope.put(ScriptEngine.FILENAME, url.getFile());
-            Object http = se.eval(new InputStreamReader(is, StandardCharsets.UTF_8));
-            target.put("http", http);
+            se.eval(new InputStreamReader(is, StandardCharsets.UTF_8));
             engineScope.remove(ScriptEngine.FILENAME);
+            globalScope.putAll(engineScope);
+            engineScope.clear();
         }
     }
 

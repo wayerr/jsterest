@@ -38,8 +38,8 @@ class TestOnNashorn implements Test {
     }
     
     @Override
-    public void run(TestContext tc) throws Exception {
-        test.invoke(tc);
+    public Object run(TestContext tc) throws Exception {
+        return test.invoke(tc);
     }
 
     @Override

@@ -91,7 +91,7 @@ public class App {
         argMap.put(arg.key, arg);
     }
 
-    private void run(String[] args) throws Exception {
+    void run(String[] args) throws Exception {
         parseArgs(args);
         if(args.length == 0 || help.appear) {
             printHelp();
@@ -157,7 +157,7 @@ public class App {
 
     private void findTests(TestsRegistry tr) throws Exception {
         LOG.info("Find tests");
-        NashornTestFactory ntf = new NashornTestFactory();
+        NashornTestFactory ntf = new NashornTestFactory(tr);
         for(String dir: tests.values) {
             LOG.log(Level.INFO, "Scan test dir: {0}", dir);
             final Path startDir = Paths.get(dir);
