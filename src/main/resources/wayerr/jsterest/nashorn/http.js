@@ -28,6 +28,10 @@ http = new (function() {
         var headers = {};
 
         for(var headerKey in conn.headerFields) {
+            if(!headerKey) {
+                //skip  '"null":"HTTP/1.1 200 OK"'
+                continue;
+            }
             headers[headerKey] = conn.getHeaderField(headerKey);
         }
         var resp = {
@@ -39,7 +43,6 @@ http = new (function() {
         console.debug("Got response:", JSON.stringify(resp));
         // data may be too big for logging
         var data = io.readFully(conn.inputStream);
-        console.debug("Got response:", resp.contentType);
         if(resp.contentType.indexOf('application/json') == 0) {
             data = JSON.parse(data);
         }
