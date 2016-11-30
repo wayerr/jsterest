@@ -1,9 +1,11 @@
 package wayerr.jsterest;
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,7 +19,7 @@ public class AppTest {
     private static final String SESSION_ID = "qwerty12";
 
     @Rule
-    public WireMockRule wireMock = new WireMockRule(18080);
+    public WireMockRule wireMock = new WireMockRule(new WireMockConfiguration().port(18080), false);
 
     @Before
     public void before() {
@@ -47,9 +49,29 @@ public class AppTest {
 
     @Test
     public void test() throws Exception {
-        App app = new App();
+        TestsRunner runner = prepare();
+        runner.getTestsNames().add("sample");
+        runner.execute();
+    }
+
+    @Test
+    public void testFail() throws Exception {
+        TestsRunner runner = prepare();
+        runner.getTestsNames().add("fail");
+        try {
+            runner.execute();
+            fail("Execution must been failed");
+        } catch (Exception e) {
+            //all is ok
+            System.out.println(e);
+        }
+    }
+
+    private TestsRunner prepare() {
+        TestsRunner runner = new TestsRunner();
+        runner.setFailAtFirstError(true);
         String projectDir = System.getProperty("user.dir");
-        String tmpDir = System.getProperty("tmp.dir");
-        app.run(new String[]{"-l", tmpDir + "/jsterest/log/", "-t", projectDir + "/src/test/resources/", "sample"});
+        runner.getSourceDirs().add(projectDir + "/src/test/resources/");
+        return runner;
     }
 }

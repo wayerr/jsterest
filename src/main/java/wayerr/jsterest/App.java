@@ -98,7 +98,12 @@ public class App {
             return;
         }
         configureLogging();
-        execute();
+
+        TestsRunner runner = new TestsRunner();
+        runner.getSourceDirs().addAll(tests.getValues());
+        runner.getTestsNames().addAll(testNames);
+
+        runner.execute();
     }
 
     private void configureLogging() throws Exception {
@@ -153,50 +158,6 @@ public class App {
             v.print(sb);
         });
         System.out.println(sb);
-    }
-
-    private void findTests(TestsRegistry tr) throws Exception {
-        LOG.info("Find tests");
-        NashornTestFactory ntf = new NashornTestFactory(tr);
-        for(String dir: tests.values) {
-            LOG.log(Level.INFO, "Scan test dir: {0}", dir);
-            final Path startDir = Paths.get(dir);
-            Files.walk(startDir).forEach(file -> {
-                if(!Files.isRegularFile(file) || !file.getFileName().toString().endsWith(".js")) {
-                    return;
-                }
-                try {
-                    LOG.log(Level.SEVERE, "Find test file: {0}", file);
-                    final Test test = ntf.create(file);
-                    LOG.log(Level.SEVERE, "Load test file: {0} as {1}", new Object[]{file, test.getName()});
-                    tr.add(test);
-                } catch(Exception e) {
-                    LOG.log(Level.SEVERE, "Can not load test file: " + file + ", due to error.", e);
-                }
-            });
-        }
-    }
-
-    private void execute() throws Exception {
-        TestsRegistry tr = new TestsRegistry();
-        findTests(tr);
-        LOG.info("Begin tests");
-        TestContext tc = new TestContext();
-        for(String testName: testNames) {
-            LOG.log(Level.INFO, "Excute test: {0}", testName);
-            final Test test = tr.get(testName);
-            if(test == null) {
-                LOG.log(Level.SEVERE, "Can not find test: {0} \n exiting.", testName);
-                return;
-            }
-            try {
-                test.run(tc);
-                LOG.log(Level.INFO, "Test: {0} is successfully executed.", testName);
-            } catch(Exception e) {
-                LOG.log(Level.SEVERE, "Test: " + testName + " is executed with error.", e);
-            }
-        }
-        LOG.info("End tests");
     }
 
 }
