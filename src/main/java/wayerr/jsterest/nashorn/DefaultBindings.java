@@ -40,7 +40,7 @@ class DefaultBindings {
         Bindings target = se.getBindings(ScriptContext.GLOBAL_SCOPE);
         target.put("console", new Console());
         target.put("io", new IO());
-        load(se, "./http.js");
+        load(se, "http.js");
         Loader loader = new Loader(testsRegistry, se);
         target.put("include", loader);
     }
