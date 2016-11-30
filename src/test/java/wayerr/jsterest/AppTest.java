@@ -1,5 +1,6 @@
 package wayerr.jsterest;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -17,9 +18,16 @@ public class AppTest {
     @Before
     public void before() {
         wireMock.stubFor(post(urlEqualTo("/api/login"))
-          .willReturn(aResponse()
-            .withHeader("Content-Type", "application/json")
+          .willReturn(response()
             .withBody("{\"key\":\"xTOKEN\"}")));
+        wireMock.stubFor(get(urlEqualTo("/api/list"))
+          .willReturn(response()
+            .withBody("[1,2,3,4]")));
+    }
+
+    private static ResponseDefinitionBuilder response() {
+        return aResponse()
+          .withHeader("Content-Type", "application/json");
     }
 
     @Test

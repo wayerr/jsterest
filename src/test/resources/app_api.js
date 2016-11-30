@@ -6,7 +6,14 @@ function () {
             data: { username:name, password:password }
         };
         var resp = http.execute(request);
-        console.debug("resp: ", resp.data.key);
+        return resp.data.key;
+    };
+    api.list = function() {
+         var request = {
+            url: api.host + "/api/list",
+        };
+        var resp = http.execute(request);
+        return resp.data;
     };
     return api;
 }
