@@ -1,5 +1,5 @@
 /**
- * A http warpper for using from JS tests.
+ * A http wrapper for using from JS tests.
  *
  * Request:
  * {
@@ -53,7 +53,10 @@ http = new (function() {
         console.debug("Execute request:", JSON.stringify(req));
         var url = new Url(req.url);
         var conn = url.openConnection();
-        conn.requestMethod = req.method || "GET";
+        if(req.method) {
+            //default method detected inner by exists of request body, se we not need to specify it
+            conn.requestMethod = req.method;
+        }
         var contentType;
         for(var headerKey in req.headers) {
             var headerVal = req.headers[headerKey];
