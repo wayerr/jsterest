@@ -15,6 +15,7 @@
  */
 package wayerr.jsterest.nashorn;
 
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import wayerr.jsterest.TestsRegistry;
 
 import java.io.IOException;
@@ -85,9 +86,22 @@ class DefaultBindings {
                 if(sb.length() > 0) {
                     sb.append(' ');
                 }
-                sb.append(o);
+                toString(sb, o);
             }
             LOG.log(level, sb.toString(), t);
+        }
+
+        private void toString(StringBuilder sb, Object o) {
+            if(o instanceof ScriptObjectMirror) {
+                try {
+                    String str = ((ScriptObjectMirror) o).to(String.class);
+                    sb.append(str);
+                    return;
+                } catch (Exception e) {
+                    // nothing
+                }
+            }
+            sb.append(o);
         }
     }
 
