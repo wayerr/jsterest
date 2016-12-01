@@ -94,7 +94,7 @@ public class App {
             printHelp();
             return;
         }
-        configureLogging();
+        configureLogging(logs.getValue());
 
         TestsRunner runner = new TestsRunner();
         runner.getSourceDirs().addAll(tests.getValues());
@@ -103,7 +103,7 @@ public class App {
         runner.execute();
     }
 
-    private void configureLogging() throws Exception {
+    static void configureLogging(String logDir) throws Exception {
         // obtain root logger
         Logger global = LogManager.getLogManager().getLogger("");
         for(Handler handler : global.getHandlers()) {
@@ -113,7 +113,6 @@ public class App {
             }
         }
 
-        String logDir = logs.getValue();
         if(logDir == null) {
             return;
         }

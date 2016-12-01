@@ -15,7 +15,6 @@
  */
 package wayerr.jsterest.nashorn;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import wayerr.jsterest.TestsRegistry;
 
 import java.io.IOException;
@@ -25,8 +24,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -43,6 +40,8 @@ class DefaultBindings {
         load(se, "http.js");
         Loader loader = new Loader(testsRegistry, se);
         target.put("include", loader);
+        ProcessStub process = new ProcessStub();
+        target.put("process", process);
     }
 
     private static void load(ScriptEngine se, String resource) throws Exception {
@@ -55,53 +54,6 @@ class DefaultBindings {
             engineScope.remove(ScriptEngine.FILENAME);
             globalScope.putAll(engineScope);
             engineScope.clear();
-        }
-    }
-
-    public static class Console {
-        private static final Logger LOG = Logger.getLogger(Console.class.getName());
-        
-        public Console() {
-        }
-
-        public void debug(Object ... args) {
-            log(Level.INFO, args);
-        }
-
-        public void warning(Object ... args) {
-            log(Level.WARNING, args);
-        }
-
-        public void error(Object ... args) {
-            log(Level.SEVERE, args);
-        }
-
-        private void log(Level level, Object[] args) {
-            StringBuilder sb = new StringBuilder();
-            Throwable t = null;
-            for(Object o: args) {
-                if(o instanceof Throwable) {
-                    t = (Throwable)o;
-                }
-                if(sb.length() > 0) {
-                    sb.append(' ');
-                }
-                toString(sb, o);
-            }
-            LOG.log(level, sb.toString(), t);
-        }
-
-        private void toString(StringBuilder sb, Object o) {
-            if(o instanceof ScriptObjectMirror) {
-                try {
-                    String str = ((ScriptObjectMirror) o).to(String.class);
-                    sb.append(str);
-                    return;
-                } catch (Exception e) {
-                    // nothing
-                }
-            }
-            sb.append(o);
         }
     }
 

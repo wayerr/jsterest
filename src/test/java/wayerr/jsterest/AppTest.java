@@ -22,7 +22,8 @@ public class AppTest {
     public WireMockRule wireMock = new WireMockRule(new WireMockConfiguration().port(18080), false);
 
     @Before
-    public void before() {
+    public void before() throws Exception {
+        App.configureLogging(null);
 
         wireMock.stubFor(post(urlEqualTo("/api/login"))
           .willReturn(response()

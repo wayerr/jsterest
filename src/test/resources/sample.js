@@ -4,4 +4,6 @@ function test() {
    var token = api.login("admin", "password");
    console.debug("token:", token);
    console.debug("list:", api.list(token));
+   console.debug("ENV: ", process.env);
+   console.debug("PATH: ", process.env.PATH);
 }
