@@ -23,6 +23,7 @@
  * Also see: https://wiki.openjdk.java.net/display/Nashorn/Nashorn+extensions
  */
 http = new (function() {
+    this.debug = false;
     var Url = java.net.URL;
     function processResponse(conn) {
         var headers = {};
@@ -40,7 +41,9 @@ http = new (function() {
             contentType: conn.contentType,
             headers: headers
         };
-        console.debug("Got response:", JSON.stringify(resp));
+        if(this.debug) {
+            console.debug("Got response:", JSON.stringify(resp));
+        }
         // data may be too big for logging
         var data = io.readFully(conn.inputStream);
         if(resp.contentType.indexOf('application/json') == 0) {
@@ -50,7 +53,9 @@ http = new (function() {
         return resp;
     }
     this.execute = function(req, ctx) {
-        console.debug("Execute request:", JSON.stringify(req));
+        if(this.debug) {
+            console.debug("Execute request:", JSON.stringify(req));
+        }
         var url = new Url(req.url);
         var conn = url.openConnection();
         if(req.method) {
@@ -63,7 +68,6 @@ http = new (function() {
             if("content-type" === headerKey.toLowerCase()) {
                 contentType = headerVal;
             }
-            console.debug(headerKey, headerVal);
             conn.setRequestProperty(headerKey, headerVal);
         }
         if(!contentType) {
