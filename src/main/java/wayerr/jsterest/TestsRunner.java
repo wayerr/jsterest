@@ -3,6 +3,7 @@ package wayerr.jsterest;
 import lombok.Data;
 import wayerr.jsterest.nashorn.NashornTestFactory;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,6 +31,10 @@ class TestsRunner {
         for(String dir: sourceDirs) {
             LOG.log(Level.INFO, "Scan test dir: {0}", dir);
             final Path startDir = Paths.get(dir);
+            File startDirFile = startDir.toFile();
+            if(!startDirFile.isDirectory()) {
+                LOG.severe("The path: " + startDirFile.getCanonicalPath() + " is not dir or not exists.");
+            }
             Files.walk(startDir).forEach(file -> {
                 if(!Files.isRegularFile(file) || !file.getFileName().toString().endsWith(".js")) {
                     return;
