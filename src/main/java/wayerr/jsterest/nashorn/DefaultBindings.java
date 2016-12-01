@@ -15,6 +15,8 @@
  */
 package wayerr.jsterest.nashorn;
 
+import jdk.internal.dynalink.beans.StaticClass;
+import wayerr.jsterest.AssertionError;
 import wayerr.jsterest.TestsRegistry;
 
 import java.io.IOException;
@@ -35,7 +37,8 @@ import javax.script.ScriptEngine;
 class DefaultBindings {
     static void init(ScriptEngine se, TestsRegistry testsRegistry) throws Exception {
         Bindings target = se.getBindings(ScriptContext.GLOBAL_SCOPE);
-        target.put("console", new Console());
+        target.put(AssertionError.class.getSimpleName(), StaticClass.forClass(AssertionError.class));
+        target.put("console", new JsObjectMapper(new Console()));
         target.put("io", new IO());
         load(se, "http.js");
         Loader loader = new Loader(testsRegistry, se);

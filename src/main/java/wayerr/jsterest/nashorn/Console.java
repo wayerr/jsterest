@@ -1,36 +1,63 @@
 package wayerr.jsterest.nashorn;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import wayerr.jsterest.AssertionError;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  */
-public class Console {
+class Console {
     private static final Logger LOG = Logger.getLogger(Console.class.getName());
 
-    public Console() {
+    Console() {
     }
 
+    @JsMethod(name = "assert")
+    private void _assert(Object... args) {
+        if(args.length == 0) {
+            return;
+        }
+        Object expr = args[0];
+        if(expr != null && (expr instanceof Boolean) && (Boolean)expr) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        Throwable th = printMsg(args, sb);
+        if(th != null) {
+            throw new AssertionError(sb.toString(), th);
+        }
+        throw new AssertionError(sb.toString());
+    }
+
+    @JsMethod
     public void debug(Object... args) {
         log(Level.INFO, args);
     }
 
+    @JsMethod
     public void log(Object... args) {
         log(Level.INFO, args);
     }
 
-    public void warning(Object... args) {
+    @JsMethod
+    public void warn(Object... args) {
         log(Level.WARNING, args);
     }
 
+    @JsMethod
     public void error(Object... args) {
         log(Level.SEVERE, args);
     }
 
     private void log(Level level, Object[] args) {
         StringBuilder sb = new StringBuilder();
+        Throwable t = printMsg(args, sb);
+        LOG.log(level, sb.toString(), t);
+    }
+
+    private Throwable printMsg(Object[] args, StringBuilder sb) {
         Throwable t = null;
         for (Object o : args) {
             if (o instanceof Throwable) {
@@ -41,7 +68,7 @@ public class Console {
             }
             toString(sb, o);
         }
-        LOG.log(level, sb.toString(), t);
+        return t;
     }
 
     private void toString(StringBuilder sb, Object o) {
