@@ -15,16 +15,15 @@
  */
 package wayerr.jsterest;
 
+import sun.rmi.runtime.Log;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 /**
  *
@@ -105,6 +104,15 @@ public class App {
     }
 
     private void configureLogging() throws Exception {
+        // obtain root logger
+        Logger global = LogManager.getLogManager().getLogger("");
+        for(Handler handler : global.getHandlers()) {
+            if(handler instanceof ConsoleHandler) {
+                ConsoleHandler consoleHandler = (ConsoleHandler) handler;
+                consoleHandler.setFormatter(LogFormatter.INSTANCE);
+            }
+        }
+
         String logDir = logs.getValue();
         if(logDir == null) {
             return;
@@ -115,8 +123,8 @@ public class App {
         }
         Files.createDirectories(Paths.get(logDir));
         final FileHandler fh = new FileHandler(logDir + "/jsterest-%g.log", 1024 * 1024 * 100, 10, false);
-        fh.setFormatter(new SimpleFormatter());
-        Logger.getGlobal().addHandler(fh);
+        fh.setFormatter(LogFormatter.INSTANCE);
+        global.addHandler(fh);
     }
 
     private void parseArgs(String[] args) {
