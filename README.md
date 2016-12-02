@@ -1,6 +1,8 @@
 # jsterest
 The tool for make REST API test on javascript. It is scan specified dir for test files and run specified test.
 
+It required only java > 1.8.0_112 (minor version is impotant due to some bugs in js engine).
+
 Command line example:
 
     java -jar jsterest.jar -l /tmp/jsterest/log/ -t /home/username/api_test/ one_test, second_test
