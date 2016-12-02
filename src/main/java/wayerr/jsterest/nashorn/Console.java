@@ -1,6 +1,8 @@
 package wayerr.jsterest.nashorn;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import jdk.nashorn.internal.objects.NativeJSON;
+import jdk.nashorn.internal.runtime.Undefined;
 import wayerr.jsterest.AssertionError;
 
 import java.util.logging.Level;
@@ -74,7 +76,8 @@ class Console {
     private void toString(StringBuilder sb, Object o) {
         if (o instanceof ScriptObjectMirror) {
             try {
-                String str = ((ScriptObjectMirror) o).to(String.class);
+                Undefined undef = Undefined.getUndefined();
+                String str = (String) NativeJSON.stringify(undef, o, undef, undef);
                 sb.append(str);
                 return;
             } catch (Exception e) {
