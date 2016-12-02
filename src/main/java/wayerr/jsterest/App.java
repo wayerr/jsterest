@@ -15,8 +15,6 @@
  */
 package wayerr.jsterest;
 
-import sun.rmi.runtime.Log;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
