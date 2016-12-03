@@ -38,6 +38,9 @@ public class NashornTestFactory {
     private final NashornScriptEngine engine;
 
     public NashornTestFactory(TestsRegistry testsRegistry) throws Exception {
+        // it enable es6
+        System.setProperty("nashorn.option.strict", "true");
+        System.setProperty("nashorn.option.language", "es6");
         ScriptEngineManager sem = new ScriptEngineManager();
         this.engine = (NashornScriptEngine) sem.getEngineByName("js");
         DefaultBindings.init(this.engine, testsRegistry);

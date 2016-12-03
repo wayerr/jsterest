@@ -56,7 +56,7 @@ class DefaultBindings {
             se.eval(new InputStreamReader(is, StandardCharsets.UTF_8));
             engineScope.remove(ScriptEngine.FILENAME);
             globalScope.putAll(engineScope);
-            engineScope.clear();
+            //engineScope.clear();
         }
     }
 

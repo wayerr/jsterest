@@ -22,9 +22,10 @@
  *
  * Also see: https://wiki.openjdk.java.net/display/Nashorn/Nashorn+extensions
  */
-http = new (function() {
+var http = new (function() {
     this.debug = false;
     var Url = java.net.URL;
+    var thiz = this;
     function processResponse(conn) {
         var headers = {};
 
@@ -41,7 +42,7 @@ http = new (function() {
             contentType: conn.contentType,
             headers: headers
         };
-        if(this.debug) {
+        if(thiz.debug) {
             console.debug("Got response:", JSON.stringify(resp));
         }
         // data may be too big for logging
