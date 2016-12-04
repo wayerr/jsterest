@@ -63,8 +63,8 @@ class JsObjectMapper extends AbstractJSObject {
             if(varArg) {
                 int remain = jsargs.length - i;
                 Object varArray = Array.newInstance(actualType, remain);
-                for(int j = i; j < jsargs.length; ++j) {
-                    Object tmp = jsargs[j];
+                for(int j = 0; j < remain; ++j) {
+                    Object tmp = jsargs[i + j];
                     Array.set(varArray, j, tmp);
                 }
                 src = varArray;

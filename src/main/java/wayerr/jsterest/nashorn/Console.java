@@ -17,11 +17,10 @@ class Console {
     }
 
     @JsMethod(name = "assert")
-    private void _assert(Object... args) {
+    private void _assert(Object expr, Object... args) {
         if(args.length == 0) {
             return;
         }
-        Object expr = args[0];
         if(expr != null && (expr instanceof Boolean) && (Boolean)expr) {
             return;
         }
