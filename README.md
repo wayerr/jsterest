@@ -47,6 +47,25 @@ function test() {
 }
 ```
 
+##  API ##
+
+Predefined objects which can be used from javascript. Part of API is based on Node.js. 
+
+* console
+    * assert(boolean expr, Object ... args) - check first argument, and when it `false` throw 
+    AssertionError with specified message.  
+    * debug(Object ... args) 
+    * log(Object ... args) - this and above methods do logging with INFO logging level 
+    * warn(Object ... args) - do logging with WARNING logging level
+    * error(Object ... args) - do logging with SEVERE logging level
+* http
+    * Object execute(Object request) - do http response, it is not persist any data between requests    
+* include(String nameOfModule) - load names js module from one of predefined directory 
+* Object clone(Object src) - clone specified objects, note that 'frozen' and etc. attributes also cloned
+* process
+    * env - map of system environments, for example:
+     `process.env.PATH` 
+
 ## build ##
 
 It simple user maven for build:
