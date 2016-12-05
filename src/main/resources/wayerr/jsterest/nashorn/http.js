@@ -36,7 +36,7 @@ var http = new (function() {
         };
         var hasError = resp.code >= 400;
         if(hasError || thiz.debug) {
-            console.debug("Got response:", JSON.stringify(resp));
+            console.debug("On", conn.getURL(), "got response:", JSON.stringify(resp));
         }
         if(!hasError) {
             for(var headerKey in conn.headerFields) {
