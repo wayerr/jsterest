@@ -29,28 +29,31 @@ var http = new (function() {
     function processResponse(conn) {
         var headers = {};
 
-        for(var headerKey in conn.headerFields) {
-            if(!headerKey) {
-                //skip  '"null":"HTTP/1.1 200 OK"'
-                continue;
-            }
-            headers[headerKey] = conn.getHeaderField(headerKey);
-        }
         var resp = {
             code: conn.responseCode,
             message: conn.responseMessage,
-            contentType: conn.contentType,
-            headers: headers
+            contentType: conn.contentType
         };
-        if(thiz.debug) {
+        var hasError = resp.code >= 400;
+        if(hasError || thiz.debug) {
             console.debug("Got response:", JSON.stringify(resp));
         }
-        // data may be too big for logging
-        var data = io.readFully(conn.inputStream);
-        if(resp.contentType.indexOf('application/json') == 0) {
-            data = JSON.parse(data);
+        if(!hasError) {
+            for(var headerKey in conn.headerFields) {
+                if(!headerKey) {
+                    //skip  '"null":"HTTP/1.1 200 OK"'
+                    continue;
+                }
+                headers[headerKey] = conn.getHeaderField(headerKey);
+            }
+            resp.headers = headers;
+            // data may be too big for logging
+            var data = io.readFully(conn.inputStream);
+            if(resp.contentType && resp.contentType.indexOf('application/json') == 0) {
+                data = JSON.parse(data);
+            }
+            resp.data = data;
         }
-        resp.data = data;
         return resp;
     }
     this.execute = function(req, ctx) {
