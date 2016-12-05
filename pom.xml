@@ -3,13 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>wayerr</groupId>
     <artifactId>jsterest</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    <scm>
+        <connection>scm:git:https://github.com/wayerr/jsterest.git</connection>
+        <developerConnection>scm:git:https://github.com/wayerr/jsterest.git</developerConnection>
+      <tag>HEAD</tag>
+  </scm>
     <build>
         <plugins>
             <plugin>
