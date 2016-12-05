@@ -26,7 +26,10 @@ var http = new (function() {
     this.debug = false;
     var Url = java.net.URL;
     var thiz = this;
-    function processResponse(conn) {
+    function isJson(contentType) {
+        return contentType && contentType.indexOf('application/json') == 0;
+    }
+    function processResponse(req, conn) {
         var headers = {};
 
         var resp = {
@@ -35,10 +38,7 @@ var http = new (function() {
             contentType: conn.contentType
         };
         var hasError = resp.code >= 400;
-        if(hasError || thiz.debug) {
-            console.debug("On", conn.getURL(), "got response:", JSON.stringify(resp));
-        }
-        if(!hasError) {
+        try {
             for(var headerKey in conn.headerFields) {
                 if(!headerKey) {
                     //skip  '"null":"HTTP/1.1 200 OK"'
@@ -47,12 +47,37 @@ var http = new (function() {
                 headers[headerKey] = conn.getHeaderField(headerKey);
             }
             resp.headers = headers;
-            // data may be too big for logging
+        } catch(e) {
+            // it usual fail when server return error
+        }
+        if(hasError) {
+            try {
+                var data = io.readFully(conn.errorStream);
+                if(data) {
+                    if(isJson(resp.contentType)) {
+                        resp.data = JSON.parse(data);
+                    } else {
+                        resp.data = data;
+                        if(!resp.message) {
+                            resp.message = data.substring(0, Math.min(30, data.length));
+                        }
+                    }
+                }
+            } catch(e) {
+              //suppress
+            }
+        } else {
             var data = io.readFully(conn.inputStream);
-            if(resp.contentType && resp.contentType.indexOf('application/json') == 0) {
+            if(isJson(resp.contentType)) {
                 data = JSON.parse(data);
             }
             resp.data = data;
+        }
+        if(req.onResponse) {
+            req.onResponse(req, resp);
+        }
+        if(thiz.debug) {
+            console.debug("Response from url:", conn.getURL(), "is:", JSON.stringify(resp));
         }
         return resp;
     }
@@ -87,6 +112,6 @@ var http = new (function() {
             io.writeFully(data, conn.getOutputStream());
         }
         conn.connect();
-        return processResponse(conn);
+        return processResponse(req, conn);
     };
 })();

@@ -9,7 +9,7 @@ Command line example:
 
 where: one_test, second_test - the javascript files /home/username/api_test/one_test.js and etc.
 
-Each test is a js function like this:
+Each test is a js function in 'strict mode' like this:
 ```js
 function test() {
   var request = {
@@ -23,7 +23,10 @@ function test() {
     data:{
       username:"admin",
       password:"password"
-    }
+    },
+    // optional function which can handle response, also it invoked before response logging 
+    //   and can set `response.message` for example or do custom logging
+    onResponse: function(request, response) {}
   };
   var resp = http.execute(request);
   console.debug("resp: ", resp);
