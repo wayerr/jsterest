@@ -43,6 +43,8 @@ class DefaultBindings {
         load(se, "http.js");
         Loader loader = new Loader(testsRegistry, se);
         target.put("include", loader);
+        Clone clone = new Clone();
+        target.put("clone", clone);
         ProcessStub process = new ProcessStub();
         target.put("process", process);
     }

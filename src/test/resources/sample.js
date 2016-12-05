@@ -18,4 +18,7 @@ function test() {
             throw new Error("FAIL")
         }
     }
+    var src = {prop: [1]};
+    var res = clone(src);
+    console.assert(res.prop[0] === src.prop[0], "Cloned objects is not same.");
 }
