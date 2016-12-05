@@ -6,12 +6,13 @@ import jdk.nashorn.internal.runtime.Undefined;
 import wayerr.jsterest.AssertionError;
 
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
  */
 class Console {
-    private static final Logger LOG = Logger.getLogger(Console.class.getName());
+    private static final Logger LOG = Logger.getLogger("console");
 
     Console() {
     }
@@ -55,7 +56,13 @@ class Console {
     private void log(Level level, Object[] args) {
         StringBuilder sb = new StringBuilder();
         Throwable t = printMsg(args, sb);
-        LOG.log(level, sb.toString(), t);
+        LogRecord lr = new LogRecord(level, sb.toString());
+        lr.setThrown(t);
+        //it need for prevent logger from walking over call stack
+        // also it force to use logger name
+        lr.setSourceClassName(null);
+        lr.setLoggerName(LOG.getName());
+        LOG.log(lr);
     }
 
     private Throwable printMsg(Object[] args, StringBuilder sb) {
