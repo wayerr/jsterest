@@ -47,4 +47,8 @@ class TestOnNashorn implements Test {
         return name;
     }
 
+    @Override
+    public Path getPath() {
+        return path;
+    }
 }

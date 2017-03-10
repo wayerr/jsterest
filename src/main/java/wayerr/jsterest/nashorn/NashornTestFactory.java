@@ -57,13 +57,11 @@ public class NashornTestFactory {
             bindings.remove(ScriptEngine.FILENAME);
         }
         return new TestOnNashorn(path, (tc) -> {
-            try(SafeCloseable in = tc.open()) {
-                JSObject res = (JSObject) script.eval(new SimpleBindings(tc.getAttributes()));
-                if(res == null || !res.isFunction()) {
-                    throw new IllegalArgumentException("Test script '" + pathString + "' must return function.");
-                }
-                return res.call(null);
+            JSObject res = (JSObject) script.eval(new SimpleBindings(tc.getAttributes()));
+            if(res == null || !res.isFunction()) {
+                throw new IllegalArgumentException("Test script '" + pathString + "' must return function.");
             }
+            return res.call(null);
         });
     }
 }

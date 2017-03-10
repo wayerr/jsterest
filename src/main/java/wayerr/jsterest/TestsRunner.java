@@ -63,7 +63,7 @@ class TestsRunner {
                 LOG.log(Level.SEVERE, "Can not find test: {0} \n exiting.", testName);
                 return;
             }
-            try {
+            try(TestContext.Enclosing in = tc.open(test)) {
                 test.run(tc);
                 LOG.log(Level.INFO, "Test: {0} is successfully executed.", testName);
             } catch(Exception e) {

@@ -15,6 +15,8 @@
  */
 package wayerr.jsterest;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,8 +25,37 @@ import java.util.concurrent.ConcurrentMap;
  * @author wayerr
  */
 public final class TestContext {
+
+    public static class Enclosing implements SafeCloseable {
+        private final Test test;
+        private final TestContext owner;
+        private final TestContext old;
+
+        Enclosing(Test test, TestContext tc) {
+            this.test = test;
+            this.owner = tc;
+            this.old = TL.get();
+            TL.set(tc);
+        }
+
+        @Override
+        public void close() {
+            TestContext curr = TL.get();
+            if(curr != this.owner) {
+                throw new IllegalStateException("Current context is not identity with enclosing owner.");
+            }
+            TL.remove();
+            TL.set(old);
+            final Enclosing last = this.owner.stack.removeLast();
+            if(last != this) {
+                throw new IllegalStateException("Last enclosing of current context is not identity with 'this'.");
+            }
+        }
+    }
+
     private static final ThreadLocal<TestContext> TL = new ThreadLocal<>();
     private final ConcurrentMap<String, Object> attrs = new ConcurrentHashMap<>();
+    private final Deque<Enclosing> stack = new ArrayDeque<>();
     
     /**
      * Return mutable set of context attributes.
@@ -41,23 +72,24 @@ public final class TestContext {
 
     /**
      * Place this into thread local for {@link #getCurrent()}
+     * @param test current test for context enclosing
      * @return handler to remove it from thread local
      */
-    public SafeCloseable open() {
-        TestContext old = TL.get();
-        TL.set(this);
-        return () -> {
-            TestContext curr = TL.get();
-            if(curr != this) {
-                throw new IllegalStateException("Current context is not identity with 'this'.");
-            }
-            TL.remove();
-            TL.set(old);
-        };
+    public Enclosing open(Test test) {
+        final Enclosing enc = new Enclosing(test, this);
+        stack.addLast(enc);
+        return enc;
     }
-
 
     public static TestContext getCurrent() {
         return TL.get();
+    }
+
+    public Test getTest() {
+        final Enclosing last = stack.peekLast();
+        if(last == null) {
+            return null;
+        }
+        return last.test;
     }
 }

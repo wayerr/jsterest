@@ -15,6 +15,8 @@
  */
 package wayerr.jsterest.nashorn;
 
+import java.io.File;
+import java.io.FileInputStream;
 import jdk.internal.dynalink.beans.StaticClass;
 import wayerr.jsterest.AssertionError;
 import wayerr.jsterest.TestsRegistry;
@@ -26,9 +28,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import wayerr.jsterest.TestContext;
 
 /**
  *
@@ -106,6 +110,19 @@ class DefaultBindings {
             } finally {
                 r.close();
             }
+        }
+
+        /**
+         * Read file to UTF-8 string
+         * @param file
+         * @return content of file
+         */
+        public String load(String file) throws IOException {
+            final TestContext tc = TestContext.getCurrent();
+            final Path path = tc.getTest().getPath();
+            File f = path.getParent().resolve(file).toAbsolutePath().toFile();
+            // to absolute path, for easy resolving whete we try to find it
+            return readFully(new FileInputStream(f));
         }
     }
 }

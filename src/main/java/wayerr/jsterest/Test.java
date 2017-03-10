@@ -15,6 +15,8 @@
  */
 package wayerr.jsterest;
 
+import java.nio.file.Path;
+
 /**
  *
  * @author wayerr
@@ -33,4 +35,10 @@ public interface Test {
      * @return 
      */
     public String getName();
+
+    /**
+     * Path to test file.
+     * @return pat to test file or null.
+     */
+    public Path getPath();
 }
